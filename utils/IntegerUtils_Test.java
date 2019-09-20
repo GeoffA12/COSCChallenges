@@ -2,6 +2,7 @@ package utils;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 public class IntegerUtils_Test implements IntegerUtils_Arroyo{
 
 	public static void main(String[] args) {
@@ -10,15 +11,16 @@ public class IntegerUtils_Test implements IntegerUtils_Arroyo{
 		testIsOddIntegerUtils_Arroyo();
 		testIsPrimeIntegerUtils_Arroyo();
 		testGreatestCommonFactorIntegerUtils_Arroyo();
-		//System.out.println(findGCD(-196003310, -434950347));
-		//System.out.println(IntegerUtils_Arroyo.greatestCommonFactor(-196003310, -434950347));
-		//testGetGreatestConstrainedMultipleIntegerUtils_Arroyo();
+
+		
+		testGetGreatestConstrainedMultipleIntegerUtils_Arroyo();
+		
 		//testReverseIntegerUtils_Arroyo();
 		//testSumthingIntegerUtils_Arroyo();
 		
 		//System.out.println(((Integer.MIN_VALUE / 3) - 1) * 3);
 		//testGetMaximumIntegerUtils_Arroyo();
-		//testGetIntegerHIntegerUtils_Arroyo();
+		testGetIntegerHIntegerUtils_Arroyo();
 		System.out.println("Assertions all passed.");
 		//assert false;
 		//System.out.println("Assertions aren't enabled.");
@@ -101,11 +103,16 @@ public class IntegerUtils_Test implements IntegerUtils_Arroyo{
 		assert IntegerUtils_Arroyo.greatestCommonFactor(-25, -5) == 5;
 		assert IntegerUtils_Arroyo.greatestCommonFactor(77, 853) == 1;
 		assert IntegerUtils_Arroyo.greatestCommonFactor(0, 111) == 111;
-		assert IntegerUtils_Arroyo.greatestCommonFactor(Integer.MIN_VALUE, 0) == Math.abs(Integer.MIN_VALUE);
+		//assert IntegerUtils_Arroyo.greatestCommonFactor(Integer.MIN_VALUE, 0) == Math.abs(Integer.MIN_VALUE);
 		assert IntegerUtils_Arroyo.greatestCommonFactor(182664, 154875) == 177;
 		assert IntegerUtils_Arroyo.greatestCommonFactor(-53, -53) == 53;
+		assert IntegerUtils_Arroyo.greatestCommonFactor(53, 53) == 53;
+		assert IntegerUtils_Arroyo.greatestCommonFactor(-53, 0) == 53;
+		assert IntegerUtils_Arroyo.greatestCommonFactor(Integer.MAX_VALUE, Integer.MAX_VALUE) == Integer.MAX_VALUE;
+		assert IntegerUtils_Arroyo.greatestCommonFactor(1100, 55) == 55;
 		assert IntegerUtils_Arroyo.greatestCommonFactor(Integer.MIN_VALUE, Integer.MAX_VALUE) == 1;
-		
+		//System.out.println(IntegerUtils_Arroyo.greatestCommonFactor(0, Integer.MIN_VALUE));
+		System.out.println(IntegerUtils_Arroyo.greatestCommonFactor(-55, Integer.MIN_VALUE));
 	}
 	
 	public static void testGetGreatestConstrainedMultipleIntegerUtils_Arroyo() {
@@ -117,11 +124,23 @@ public class IntegerUtils_Test implements IntegerUtils_Arroyo{
 		assert IntegerUtils_Arroyo.getGreatestConstrainedMultiple(3, -1000) == -1002;
 		assert IntegerUtils_Arroyo.getGreatestConstrainedMultiple(-4, 2) == 0;
 		assert IntegerUtils_Arroyo.getGreatestConstrainedMultiple(-100, 100) == 100;
+		assert IntegerUtils_Arroyo.getGreatestConstrainedMultiple(1, Integer.MIN_VALUE) == Integer.MIN_VALUE;
+		assert IntegerUtils_Arroyo.getGreatestConstrainedMultiple(1, Integer.MAX_VALUE) == Integer.MAX_VALUE;
+//		for (int x = 0; x < 200; ++x) {
+//			int k = ThreadLocalRandom.current().nextInt(-1000, 1000);
+//			int max = ThreadLocalRandom.current().nextInt(-1000, 1000);
+//			System.out.println("k is: "+ k + " max is: " + max);
+//			System.out.println(IntegerUtils_Arroyo.getGreatestConstrainedMultiple(k, max));
+//		}
 	}
 	
 	public static void testGetIntegerHIntegerUtils_Arroyo() {
-		//assert IntegerUtils_Arroyo.getIntegerH(-14, -2) == -42;
-		//assert IntegerUtils_Arroyo.getIntegerH(h_q_3, h_r_5)
+		for (int x = 0; x < 500; ++x) {
+			int h_q_3 = ThreadLocalRandom.current().nextInt(-80, 80);
+			int h_r_5 = ThreadLocalRandom.current().nextInt(-4, 4);
+			System.out.println("h_q_3 is: "+ h_q_3 + " h_r_5 is: " + h_r_5);
+			System.out.println(IntegerUtils_Arroyo.getIntegerH(h_q_3, h_r_5));
+		}
 		
 	}
 	
@@ -152,7 +171,5 @@ public class IntegerUtils_Test implements IntegerUtils_Arroyo{
 		assert IntegerUtils_Arroyo.sumthing(24569872) == 7;
 		assert IntegerUtils_Arroyo.sumthing(Integer.MAX_VALUE) == 1;
 	}
-	
-	
 	
 }
