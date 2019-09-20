@@ -1,5 +1,7 @@
 package utils;
+
 import java.util.*;
+
 public interface IntegerUtils_Arroyo {
 	public static boolean isEven(int k) {
 		return (k % 2 == 0) ? true : false;
@@ -51,6 +53,7 @@ public interface IntegerUtils_Arroyo {
 	
 	// 7, 1
 	public static int getGreatestConstrainedMultiple(int k, int maximum) {
+		if (k == 0 && maximum < k) throw new IllegalArgumentException("Not valid");
 		if (k == maximum || k == 0) return k;
 		int subtractAmount = ((maximum % k) + Math.abs(k)) % Math.abs(k);
 		return (maximum - subtractAmount);
@@ -68,7 +71,7 @@ public interface IntegerUtils_Arroyo {
 			 if (needToDecrement && startVal > Integer.MIN_VALUE) {
 				 startVal--;
 			 }
-			 else if (!needToDecrement && startVal < Integer.MAX_VALUE){
+			 else if (!needToDecrement && startVal < Integer.MAX_VALUE) {
 				 startVal++;
 			 }
 		 }
@@ -130,7 +133,13 @@ public interface IntegerUtils_Arroyo {
 		}
 		String intString = String.valueOf(k);
 		StringBuilder sb = new StringBuilder();
-		return Integer.valueOf(sb.append(intString).reverse().toString());
+		Integer reverseInt = Integer.valueOf(sb.append(intString).reverse().toString());
+		if (reverseInt <= Integer.MAX_VALUE) {
+			return reverseInt;
+		}
+		else {
+			throw new NumberFormatException("Number is too big!");
+		}
 		
 	}
 	
@@ -151,12 +160,10 @@ public interface IntegerUtils_Arroyo {
 		for (int x = 0; x < longString.length(); ++x) {
 			holder[x] = longString.charAt(x) - '0';
 		}
-		System.out.println(Arrays.toString(holder));
 		int sum = 0;
 		for (int x = 0; x < holder.length; ++x) {
 			sum += holder[x];
 		}
-		System.out.println(sum);
 		if (sum < 10) {
 			return sum;
 		}
