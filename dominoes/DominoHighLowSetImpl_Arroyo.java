@@ -7,12 +7,12 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 	public static final char SUM_DIFFERENCE_DELIMITER = ',';
 	public static final int MAX_SUM = 12;
 	public DominoHighLowSetImpl_Arroyo(int highPipCount, int lowPipCount) {
-		assert highPipCount >= lowPipCount;
-        assert highPipCount <= MAXIMUM_PIP_COUNT;
-        assert lowPipCount <= MAXIMUM_PIP_COUNT;
-        assert highPipCount >= MINIMUM_PIP_COUNT;
-        assert lowPipCount >= MINIMUM_PIP_COUNT;
-        highLowSet = new HashSet<>(Arrays.asList(highPipCount, lowPipCount));
+        if (checkPipCountRange(highPipCount) && checkPipCountRange(lowPipCount) && highPipCount >= lowPipCount) {
+        	highLowSet = new HashSet<>(Arrays.asList(highPipCount, lowPipCount));
+        }
+        else {
+        	throw new RuntimeException("I can't represent a domino with your integers.");
+        }
 	}
 	
 	public DominoHighLowSetImpl_Arroyo(String sumDifferenceString) {
@@ -20,72 +20,116 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 		int highPip;
 		int lowPip;
 		if (sumDifferenceString.length() == 4) {
-			highPip = Integer.parseInt(sumDifferenceString.substring(0, 2));
-			lowPip = charToDigit(sumDifferenceString.charAt(3));
+			highPip = (Integer.parseInt(sumDifferenceString.substring(0, 2)) + charToDigit(sumDifferenceString.charAt(3))) / 2;
+			lowPip = (Integer.parseInt(sumDifferenceString.substring(0, 2)) - charToDigit(sumDifferenceString.charAt(3))) / 2;
 		}
 		else {
-			highPip = charToDigit(sumDifferenceString.charAt(0));
-			lowPip = charToDigit(sumDifferenceString.charAt(2));
+			highPip = (charToDigit(sumDifferenceString.charAt(0)) + charToDigit(sumDifferenceString.charAt(2))) / 2;
+			lowPip = (charToDigit(sumDifferenceString.charAt(0)) - charToDigit(sumDifferenceString.charAt(2))) / 2;
 		}
 		
-		highLowSet = new HashSet<>(Arrays.asList(highPip, lowPip));
+		if (checkPipCountRange(highPip) && checkPipCountRange(lowPip) && highPip >= lowPip) {
+			highLowSet = new HashSet<>(Arrays.asList(highPip, lowPip));
+		}
+		else {
+			throw new RuntimeException("I Can't represent a domino with your string.");
+		}
 	}
 	
 	public static boolean isSumDifferenceString(String str) {
+		boolean validString = true; 
 		if (str.length() != 4 && str.length() != 3) {
-			return false;
+			validString = false;
 		}
-		boolean validString = true;
 		int potentialSum;
 		int potentialDifference;
-		char[] strCharArray = str.toCharArray();
 		if (str.length() == 4) {
-			if (!checkDelimiterChar(strCharArray[2])) {
-				validString = false;
-			}
-			potentialSum = Integer.parseInt(str.substring(0, 2));
-			if (!checkIntSumRange(potentialSum)) {
-				validString = false;
-			}
-			potentialDifference = charToDigit(strCharArray[strCharArray.length - 1]);
-			if (!checkIntDifferenceRange(potentialDifference)) {
-				validString = false;
-			}
-			else if (potentialSum < potentialDifference) {
+			if (!isValidSumDifferenceStringLength4Sum(str)) {
 				validString = false;
 			}
 		}
 		else {
-			if (!checkDelimiterChar(strCharArray[1])) {
+			if (!isValidSumDifferenceStringLength3(str)) {
 				validString = false;
 			}
-			potentialSum = charToDigit(strCharArray[0]);
-			if (!checkIntSumRange(potentialSum)) {
-				validString = false;
+		}
+		
+		if (validString) {
+			if (str.length() == 4) {
+				potentialSum = Integer.parseInt(str.substring(0, 2), 10);
+				potentialDifference = charToDigit(str.charAt(3));
 			}
-			potentialDifference = charToDigit(strCharArray[2]);
-			if (!checkIntDifferenceRange(potentialDifference)) {
-				validString = false;
+			else {
+				potentialSum = charToDigit(str.charAt(0));
+				potentialDifference = charToDigit(str.charAt(2));
 			}
-			else if (potentialSum < potentialDifference) {
+			if (potentialSum < potentialDifference) {
 				validString = false;
 			}
 		}
 		return validString;
 	}
 	
+	public static boolean isValidSumDifferenceStringLength3(String str) {
+		int potentialSum = charToDigit(str.charAt(0));
+		int potentialDifference = charToDigit(str.charAt(2));
+		char potentialDelimiter = str.charAt(1);
+		boolean rv = true;
+		if (!checkIntSumRange(potentialSum)) {
+			rv = false;
+		}
+		else if (!checkIntDifferenceRange(potentialDifference)) {
+			rv = false;
+		}
+		else if (potentialDelimiter != SUM_DIFFERENCE_DELIMITER) {
+			rv = false;
+		}
+		return rv;
+	}
+	
+	public static boolean isValidSumDifferenceStringLength4Sum(String str) {
+		boolean rv = true;
+		int potentialSum;
+		if (str.charAt(2) == SUM_DIFFERENCE_DELIMITER) {
+			try {
+				Integer.parseInt(str.substring(0, 2), 10);
+			}
+			catch (NumberFormatException | NullPointerException npe) {
+				rv = false;
+			}
+			if (rv) {
+				potentialSum = Integer.parseInt(str.substring(0, 2), 10);
+				if (!checkIntSumRange(potentialSum)) {
+					rv = false;
+				}
+				else if (!checkIntDifferenceRange(charToDigit(str.charAt(3)))) {
+					rv = false;
+				}
+			}
+		}
+		else {
+			rv = false;
+		}
+		return rv;
+		
+	}
+	
+	
 	public static boolean checkIntSumRange(int i) {
-		return (i <= MAX_SUM && i >= 0);
+		return (i <= MAX_SUM && i >= MINIMUM_PIP_COUNT);
 	}
 	
 	public static boolean checkIntDifferenceRange(int i) {
-		return (i <= MAXIMUM_PIP_COUNT && i >= 0);
+		return (i <= MAXIMUM_PIP_COUNT && i >= MINIMUM_PIP_COUNT);
 	}
 	
-	public static boolean checkDelimiterChar (char c) {
+	public static boolean checkDelimiterChar(char c) {
 		return c == SUM_DIFFERENCE_DELIMITER;
 	}
 	
+	public static boolean checkPipCountRange(int k) {
+		return k <= MAXIMUM_PIP_COUNT && k >= MINIMUM_PIP_COUNT;
+	}
 	public static int charToDigit(char c) {
         int convertedChar = c - '0';
         return convertedChar;
