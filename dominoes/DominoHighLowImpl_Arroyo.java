@@ -97,7 +97,7 @@ private int highPipCount;
     
     public static boolean isValidSumAndDifference(int s, int d) {
     	boolean validSumAndDif = true;
-    	if (s > MAXIMUM_PIP_COUNT + MAXIMUM_PIP_COUNT || s < MAXIMUM_PIP_COUNT + MINIMUM_PIP_COUNT) {
+    	if (s > MAXIMUM_PIP_COUNT + MAXIMUM_PIP_COUNT || s < MINIMUM_PIP_COUNT + MINIMUM_PIP_COUNT) {
     		validSumAndDif = false;
     	}
     	else if (d > MAXIMUM_PIP_COUNT - MINIMUM_PIP_COUNT || d < 0) {
@@ -123,7 +123,7 @@ private int highPipCount;
     // Make sure you test the null set here. 
     public static boolean isValidHighLowSet(Set<Integer> aSet) {
     	boolean isValidSet = true;
-    	if (!aSet.isEmpty() && aSet.size() == 2) {
+    	if (!aSet.isEmpty() && (aSet.size() == 2 || aSet.size() == 1)) {
     		int potentialHighPip = Collections.max(aSet);
     		int potentialLowPip = Collections.min(aSet);
     		if (!isValidPipCounts(potentialHighPip, potentialLowPip)) {
