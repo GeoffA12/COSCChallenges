@@ -2,56 +2,61 @@ package dominoes;
 import java.util.*;
 public class DominoHighLowImpl_Arroyo implements Domino{
 
-	private int highPipCount;
+private int highPipCount;
     private int lowPipCount;
 
     public static final char HIGH_LOW_STRING_SEPARATOR = ':';
 
     public static final int INDEX_OF_SUM = 0;
     public static final int INDEX_OF_DIFFERENCE = 1;
-    public static final int MAX_SUM = 12;
+
     public DominoHighLowImpl_Arroyo(int highPipCount, int lowPipCount) {
-        assert highPipCount >= lowPipCount;
-        assert highPipCount <= MAXIMUM_PIP_COUNT;
-        assert lowPipCount <= MAXIMUM_PIP_COUNT;
-        assert highPipCount >= MINIMUM_PIP_COUNT;
-        assert lowPipCount >= MINIMUM_PIP_COUNT;
+        assert isValidPipCounts(highPipCount, lowPipCount);
         this.highPipCount = highPipCount;
         this.lowPipCount = lowPipCount;
     }
-
+    
+    public static boolean isValidPipCounts(int potentialHigh, int potentialLow) {
+    	boolean isValidPips = true;
+    	if (potentialHigh > MAXIMUM_PIP_COUNT || potentialHigh < MINIMUM_PIP_COUNT) {
+    		isValidPips = false;
+    	}
+    	else if (potentialLow > MAXIMUM_PIP_COUNT || potentialLow < MINIMUM_PIP_COUNT) {
+    		isValidPips = false;
+    	}
+    	else if (potentialLow > potentialHigh) {
+    		isValidPips = false;
+    	}
+    	return isValidPips;
+    }
+    
     public DominoHighLowImpl_Arroyo(String highLowString) {
         assert isHighLowString(highLowString);
         char firstDigit = highLowString.charAt(0);
         char secondDigit = highLowString.charAt(2);
-        highPipCount = charToDigit(firstDigit);
-        lowPipCount = charToDigit(secondDigit);
+        this.highPipCount = charToDigit(firstDigit);
+        this.lowPipCount = charToDigit(secondDigit);
     }
 
     public static boolean isHighLowString(String str) {
     	boolean isValidString;
-    	char[] charArray = str.toCharArray();
-        if (charArray.length != 3) {
-            isValidString = false;
-            return isValidString;
-        }
-        char firstChar = charArray[0];
-        char potentialSeparator = charArray[1];
-        char secondChar = charArray[2];
-        if (potentialSeparator != HIGH_LOW_STRING_SEPARATOR) {
-            isValidString = false;
-        }
-        else if (charToDigit(firstChar) > MAXIMUM_PIP_COUNT || charToDigit(firstChar) < MINIMUM_PIP_COUNT) {
-            isValidString = false;
-        }
-        else if (charToDigit(secondChar) > MAXIMUM_PIP_COUNT || charToDigit(secondChar) < MINIMUM_PIP_COUNT) {
-            isValidString = false;
-        }
-        else if (charToDigit(secondChar) > charToDigit(firstChar)) {
-            isValidString = false;
+        if (str != null && str.length() == 3) {
+        	char[] charArray = str.toCharArray();
+        	char potentialHighChar = charArray[0];
+            char potentialSeparator = charArray[1];
+            char potentialLowChar = charArray[2];
+            if (potentialSeparator != HIGH_LOW_STRING_SEPARATOR) {
+            	isValidString = false;
+            }
+            else if (!isValidPipCounts(charToDigit(potentialHighChar), charToDigit(potentialLowChar))) {
+            	isValidString = false;
+            }
+            else {
+                isValidString = true;
+            }
         }
         else {
-            isValidString = true;
+        	isValidString = false;
         }
         return isValidString;
     }
@@ -64,55 +69,70 @@ public class DominoHighLowImpl_Arroyo implements Domino{
     // Pre-condition: sumDifference.length == 2
     // Pre-condition: sumDifference[INDEX_OF_SUM] >= sumDifference[INDEX_OF_DIFFERENCE]
     public DominoHighLowImpl_Arroyo(int[] sumDifference) {
-    	assert isSumDifferenceArray(sumDifference);
-        int sum = sumDifference[INDEX_OF_SUM]; int difference = sumDifference[INDEX_OF_DIFFERENCE];
-        highPipCount = (sum + difference) / 2;
-        lowPipCount = (sum - difference) / 2;
+        assert (isValidSumDifferenceArray(sumDifference));
+        int sum = sumDifference[INDEX_OF_SUM];
+        int difference = sumDifference[INDEX_OF_DIFFERENCE];
+       
+        int potentialHigh = (sum + Math.abs(difference)) / 2;
+        int potentialLow = (sum - Math.abs(difference)) / 2;
+        assert(isValidPipCounts(potentialHigh, potentialLow));
+        highPipCount = potentialHigh;
+        lowPipCount = potentialLow;
     }
-    
-    public static boolean isSumDifferenceArray(int[] array) {
+
+    public static boolean isValidSumDifferenceArray(int[] array) {
     	boolean isValidArray = true;
-    	if (array.length != 2) {
-    		isValidArray = false;
+    	if (array != null && array.length == 2) {
+    		int potentialSum = array[INDEX_OF_SUM]; 
+    		int potentialDifference = array[INDEX_OF_DIFFERENCE];
+    		if (!isValidSumAndDifference(potentialSum, potentialDifference)) {
+    			isValidArray = false;
+    		}
     	}
     	else {
-    		int sum = array[INDEX_OF_SUM]; int difference = array[INDEX_OF_DIFFERENCE];
-    		if (sum > MAX_SUM || sum < MINIMUM_PIP_COUNT) {
-    			isValidArray = false;
-    		}
-    		else if (difference > MAXIMUM_PIP_COUNT || difference < MINIMUM_PIP_COUNT) {
-    			isValidArray = false;
-    		}
-    		else if (difference > sum) {
-    			isValidArray = false;
-    		}
+    		isValidArray = false;
     	}
     	return isValidArray;
     }
-
+    
+    public static boolean isValidSumAndDifference(int s, int d) {
+    	boolean validSumAndDif = true;
+    	if (s > MAXIMUM_PIP_COUNT + MAXIMUM_PIP_COUNT || s < MAXIMUM_PIP_COUNT + MINIMUM_PIP_COUNT) {
+    		validSumAndDif = false;
+    	}
+    	else if (d > MAXIMUM_PIP_COUNT - MINIMUM_PIP_COUNT || d < 0) {
+    		validSumAndDif = false;
+    	}
+    	else if (d > s) {
+    		validSumAndDif = false;
+    	}
+    	return validSumAndDif;
+    }
+    
     // Pre-condition: 1 <= highLowSet.size() <= 2
     // Pre-condition: !highLowSet.contains(null)
     public DominoHighLowImpl_Arroyo(Set<Integer> highLowSet) {
-    	assert isHighLowSet(highLowSet);
+    	assert isValidHighLowSet(highLowSet);
         int highPip = Collections.max(highLowSet);
         int lowPip = Collections.min(highLowSet);
-        highPipCount = highPip;
-        lowPipCount = lowPip;
+        this.highPipCount = highPip;
+        this.lowPipCount = lowPip;
 
     }
     
-    public static boolean isHighLowSet(Set<Integer> aSet) {
+    // Make sure you test the null set here. 
+    public static boolean isValidHighLowSet(Set<Integer> aSet) {
     	boolean isValidSet = true;
-    	if (aSet.size() < 1 || aSet.size() > 2) {
+    	if (!aSet.isEmpty() && aSet.size() == 2) {
+    		int potentialHighPip = Collections.max(aSet);
+    		int potentialLowPip = Collections.min(aSet);
+    		if (!isValidPipCounts(potentialHighPip, potentialLowPip)) {
+    			isValidSet = false;
+    		}
+    	}
+    	else {
     		isValidSet = false;
     	}
-        else {
-        	for (Integer i : aSet) {
-        		if (i > MAXIMUM_PIP_COUNT || i < MINIMUM_PIP_COUNT) {
-        			isValidSet = false;
-        		}
-            }
-        }
     	return isValidSet;
     }
     
@@ -123,5 +143,6 @@ public class DominoHighLowImpl_Arroyo implements Domino{
     public int getLowPipCount() {
         return lowPipCount;
     }
+
 
 }
