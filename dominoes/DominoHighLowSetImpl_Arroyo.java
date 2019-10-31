@@ -74,7 +74,7 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 	*/
 	public static boolean isSumDifferenceString(String str) {
 		boolean validString = true; 
-		if (str != null && (str.length() != 4 || str.length() != 3)) {
+		if (str != null && (str.length() == 4 || str.length() == 3)) {
 			if (str.length() == 4) {
 				if (!isValidSumDifferenceStringLength4Sum(str)) {
 					validString = false;
@@ -113,13 +113,16 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 		int potentialDifference = charToDigit(str.charAt(2));
 		char potentialDelimiter = str.charAt(1);
 		boolean rv = true;
-		if (!checkIntSumRange(potentialSum)) {
+		if (!checkSumRange(potentialSum)) {
 			rv = false;
 		}
 		else if (!checkIntDifferenceRange(potentialDifference)) {
 			rv = false;
 		}
 		else if (potentialDelimiter != SUM_DIFFERENCE_DELIMITER) {
+			rv = false;
+		}
+		else if ((potentialSum + potentialDifference) % 2 != 0 && (potentialSum - potentialDifference) % 2 != 0)  {
 			rv = false;
 		}
 		return rv;
@@ -129,6 +132,7 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 	public static boolean isValidSumDifferenceStringLength4Sum(String str) {
 		boolean rv = true;
 		int potentialSum;
+		int potentialDifference;
 		if (str.charAt(2) == SUM_DIFFERENCE_DELIMITER) {
 			try {
 				Integer.parseInt(str.substring(0, 2), 10);
@@ -138,10 +142,17 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 			}
 			if (rv) {
 				potentialSum = Integer.parseInt(str.substring(0, 2), 10);
-				if (!checkIntSumRange(potentialSum)) {
+				potentialDifference = str.charAt(3);
+				if (!checkSumRange(potentialSum)) {
 					rv = false;
 				}
 				else if (!checkIntDifferenceRange(charToDigit(str.charAt(3)))) {
+					rv = false;
+				}
+				else if ((potentialSum + potentialDifference) % 2 != 0 && (potentialSum - potentialDifference) % 2 != 0) {
+					rv = false;
+				}
+				else if (str.charAt(0) == '0') {
 					rv = false;
 				}
 			}
@@ -153,16 +164,11 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 		
 	}
 	
-	// Helper method which checks to see if an integer is within the valid sum range.
-	// Based on preconditions, sum must be between 12 and 0 to return true. 
-	public static boolean checkIntSumRange(int i) {
-		return (i <= MAX_SUM && i >= MINIMUM_PIP_COUNT);
-	}
 	
 	// Helper method which checks to see if an integer is within the valid difference range.
 	// Based on preconditions, sum must be between 6 and 0 to return true
 	public static boolean checkIntDifferenceRange(int i) {
-		return (i <= MAXIMUM_PIP_COUNT && i >= MINIMUM_PIP_COUNT);
+		return (i <= MAXIMUM_PIP_COUNT - MINIMUM_PIP_COUNT && i >= 0);
 	}
 	
 	public static boolean checkDelimiterChar(char c) {
@@ -174,6 +180,10 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
         int convertedChar = c - '0';
         return convertedChar;
     }
+	
+	public static boolean checkSumRange(int s) {
+		return (s <= MAXIMUM_PIP_COUNT + MAXIMUM_PIP_COUNT && s >=MINIMUM_PIP_COUNT + MINIMUM_PIP_COUNT);
+	}
 	
 
 	/* One argument constructor  which takes in an integer from user. The integer passed in
