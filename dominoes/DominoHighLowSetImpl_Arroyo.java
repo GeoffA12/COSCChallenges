@@ -17,16 +17,25 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 	public DominoHighLowSetImpl_Arroyo(int highPipCount, int lowPipCount) {
 		// Test the input from the user to make sure the two integers passed in are within 
 		// the client-facing table for this constructor.
-        if (checkPipCountRange(highPipCount) && checkPipCountRange(lowPipCount) && highPipCount >= lowPipCount) {
-        	highLowSet = new HashSet<>(Arrays.asList(highPipCount, lowPipCount));
-        }
+        assert isValidPipCounts(highPipCount, lowPipCount);
         // We received a valid combination of integers, but we can't form a domino instance
         // based on our client-facing and internal tables. 
-        else {
-        	throw new RuntimeException("I can't represent a domino with your integers.");
-        }
+        highLowSet = new HashSet<Integer>(Arrays.asList(highPipCount, lowPipCount));
 	}
 	
+	public static boolean isValidPipCounts(int potentialHigh, int potentialLow) {
+    	boolean isValidPips = true;
+    	if (potentialHigh > MAXIMUM_PIP_COUNT || potentialHigh < MINIMUM_PIP_COUNT) {
+    		isValidPips = false;
+    	}
+    	else if (potentialLow > MAXIMUM_PIP_COUNT || potentialLow < MINIMUM_PIP_COUNT) {
+    		isValidPips = false;
+    	}
+    	else if (potentialLow > potentialHigh) {
+    		isValidPips = false;
+    	}
+    	return isValidPips;
+    }
 	/* One argument constructor for the DominoHighLowSetImpl_Arroyo class. The one
 	 * argument passed in is a string. The string passed in by user represents a string
 	 * of the sum digit of high pip count plus low pip count, followed by a constant
@@ -52,12 +61,8 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 		// At this point, the user has sent in a valid string. However, we're not sure if we can 
 		// construct an instance yet. We need to check preconditions to see if user has violated
 		// still. 
-		if (checkPipCountRange(highPip) && checkPipCountRange(lowPip) && highPip >= lowPip) {
-			highLowSet = new HashSet<>(Arrays.asList(highPip, lowPip));
-		}
-		else {
-			throw new RuntimeException("I Can't represent a domino with your string.");
-		}
+		assert isValidPipCounts(highPip, lowPip);
+		highLowSet = new HashSet<Integer>(Arrays.asList(highPip, lowPip));
 	}
 	
 	/* Helper method which will check to see if the user has violated preconditions on
@@ -69,22 +74,23 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 	*/
 	public static boolean isSumDifferenceString(String str) {
 		boolean validString = true; 
-		if (str.length() != 4 && str.length() != 3) {
+		if (str != null && (str.length() != 4 || str.length() != 3)) {
+			if (str.length() == 4) {
+				if (!isValidSumDifferenceStringLength4Sum(str)) {
+					validString = false;
+				}
+			}
+			else if (str.length() == 3){
+				if (!isValidSumDifferenceStringLength3(str)) {
+					validString = false;
+				}
+			}
+		}
+		else {
 			validString = false;
 		}
 		int potentialSum;
 		int potentialDifference;
-		if (str.length() == 4) {
-			if (!isValidSumDifferenceStringLength4Sum(str)) {
-				validString = false;
-			}
-		}
-		else if (str.length() == 3){
-			if (!isValidSumDifferenceStringLength3(str)) {
-				validString = false;
-			}
-		}
-		
 		if (validString) {
 			if (str.length() == 4) {
 				potentialSum = Integer.parseInt(str.substring(0, 2), 10);
@@ -163,18 +169,13 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 		return c == SUM_DIFFERENCE_DELIMITER;
 	}
 	
-	// Helper method which checks to see if an integer is within the valid pipCount range.
-	// Based on preconditions, pipCount must be between 6 and 0 to return true
-	public static boolean checkPipCountRange(int k) {
-		return k <= MAXIMUM_PIP_COUNT && k >= MINIMUM_PIP_COUNT;
-	}
 	
 	public static int charToDigit(char c) {
         int convertedChar = c - '0';
         return convertedChar;
     }
 	
-	public static final Set<Integer> validInputsForLowPlus8TimesHigh = new HashSet<>(Arrays.asList(0, 8, 16, 24, 32, 40, 48, 9, 17, 25, 33, 41, 49, 18, 26, 34, 42, 50, 27, 35, 43, 51, 36, 44, 52, 45, 53, 54));
+
 	/* One argument constructor  which takes in an integer from user. The integer passed in
 	 * represents a value which is 8 times the high pip count plus the low pip count of 
 	 * the domino instance the user wants to receive. 
@@ -188,6 +189,7 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 		assert isLowPlus8TimesHighInteger(lowPlus8TimesHigh);
 		int lowPip = lowPlus8TimesHigh % 8;
 		int highPip = (lowPlus8TimesHigh - lowPip) / 8;
+		assert isValidPipCounts(highPip, lowPip);
 		highLowSet = new HashSet<>(Arrays.asList(highPip, lowPip));
 	}
 	
@@ -199,7 +201,16 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 	 * Otherwise, return false. 
 	 * */
 	public static boolean isLowPlus8TimesHighInteger(int k) {
-		return validInputsForLowPlus8TimesHigh.contains(k);
+		boolean wasFound = false;
+		for (int x = MINIMUM_PIP_COUNT; x <= MAXIMUM_PIP_COUNT; ++x) {
+			for (int y = x; y <= MAXIMUM_PIP_COUNT; ++y) {
+				int check = x + (y * 8);
+				if (k == check) {
+					wasFound = true;
+				}
+			}
+		}
+		return wasFound;
 	}
 	
 	// Getter for highPipCount attribute of the Domino interface
@@ -213,4 +224,3 @@ public class DominoHighLowSetImpl_Arroyo implements Domino{
 	}
 
 }
-
