@@ -97,7 +97,7 @@ public class DominoHighLowImpl_Arroyo implements Domino{
        
         int potentialHigh = (sum + Math.abs(difference)) / 2;
         int potentialLow = (sum - Math.abs(difference)) / 2;
-        assert(isValidPipCounts(potentialHigh, potentialLow));
+        assert isValidPipCounts(potentialHigh, potentialLow);
         highPipCount = potentialHigh;
         lowPipCount = potentialLow;
     }
@@ -132,6 +132,9 @@ public class DominoHighLowImpl_Arroyo implements Domino{
     		validSumAndDif = false;
     	}
     	else if (d > s) {
+    		validSumAndDif = false;
+    	}
+    	else if ((s + d) % 2 != 0 && (s - d) % 2 != 0) {
     		validSumAndDif = false;
     	}
     	return validSumAndDif;
@@ -172,6 +175,44 @@ public class DominoHighLowImpl_Arroyo implements Domino{
     		isValidSet = false;
     	}
     	return isValidSet;
+    }
+    
+    public DominoHighLowImpl_Arroyo(int highPipQuotientBy2, int highPipRemainderBy3, int lowPipQuotientBy2, int lowPipRemainderBy3) {
+    	assert intsFollowPreconditions(highPipQuotientBy2, highPipRemainderBy3, lowPipQuotientBy2,lowPipRemainderBy3);
+    	assert canFindHighOrLowPipFromRemainderAndQuotient(highPipQuotientBy2, highPipRemainderBy3);
+    	assert canFindHighOrLowPipFromRemainderAndQuotient(lowPipQuotientBy2, lowPipRemainderBy3);
+    	int potentialHigh = findHighOrLowPipFromRemainderAndQuotient(highPipQuotientBy2, highPipRemainderBy3);
+    	int potentialLow = findHighOrLowPipFromRemainderAndQuotient(lowPipQuotientBy2, lowPipRemainderBy3);
+    	assert isValidPipCounts(potentialHigh, potentialLow);
+    	highPipCount = potentialHigh;
+    	lowPipCount = potentialLow;
+    }
+    
+    public static boolean intsFollowPreconditions(int a, int b, int c, int d) {
+    	boolean follows = true;
+    	if (a < MINIMUM_PIP_COUNT / 2 || a > MAXIMUM_PIP_COUNT / 2) {
+    		follows = false;
+    	}
+    	else if (b < 0 || b > 2) {
+    		follows = false;
+    	}
+    	else if (c < MINIMUM_PIP_COUNT / 2 || c > MAXIMUM_PIP_COUNT / 2) {
+    		follows = false;
+    	}
+    	else if (d < 0 || d > 2) {
+    		follows = false;
+    	}
+    	return follows;
+    }
+    
+    public static boolean canFindHighOrLowPipFromRemainderAndQuotient(int quotientBy2, int remainderBy3) {
+    	int test = quotientBy2 * 2;
+    	return (test % 3 == remainderBy3 || (test + 1) % 3 == remainderBy3);
+    }
+    
+    public static int findHighOrLowPipFromRemainderAndQuotient(int quotientBy2, int remainderBy3) {
+    	int test = quotientBy2 * 2;
+    	return (test % 3 == remainderBy3) ? test : test + 1;
     }
     
  // Getter for highPipCount attribute of the Domino interface
