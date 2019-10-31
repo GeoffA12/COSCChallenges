@@ -7,12 +7,10 @@ public class DominoLowDifferenceStringImpl_Arroyo implements Domino{
 	public static final int lowIndex = 0;
 	public static final int delimiterIndex = 1;
 	public static final int differenceIndex = 2;
-	public static final Set<Integer> validInputsForLowPlus8TimesHigh = new HashSet<>(Arrays.asList(0, 8, 16, 24, 32, 40, 48, 9, 17, 25, 33, 41, 49, 18, 26, 34, 42, 50, 27, 35, 43, 51, 36, 44, 52, 45, 53, 54));
+	
 	
 	public static final int INDEX_OF_HIGH = 0;
 	public static final int INDEX_OF_SUM = 1;
-	public static final int MAX_SUM = 12;
-	public static final int MIN_SUM = 0;
 	
 	/* One argument constructor for the DominoLowDifferenceStringImpl class. 
 	 * The constructor will receive an integer as its only parameter. The integer sent 
@@ -26,11 +24,26 @@ public class DominoLowDifferenceStringImpl_Arroyo implements Domino{
 	
 	public DominoLowDifferenceStringImpl_Arroyo(int lowPlus8TimesHigh) {
 		assert isLowPlus8TimesHighInteger(lowPlus8TimesHigh);
-		int lowPip = lowPlus8TimesHigh % 8;
-		int highPip = (lowPlus8TimesHigh - lowPip) / 8;
-		int difference = highPip - lowPip;
-		lowDifferenceString = intToString(lowPip) + LOW_DIFFERENCE_DELIMITER + intToString(difference);
+		int potentialLowPip = lowPlus8TimesHigh % 8;
+		int potentialHighPip = (lowPlus8TimesHigh - potentialLowPip) / 8;
+		int difference = potentialHighPip - potentialLowPip;
+		assert isValidPipCounts(potentialHighPip, potentialLowPip);
+		lowDifferenceString = intToString(potentialLowPip) + LOW_DIFFERENCE_DELIMITER + intToString(difference);
 	}
+	
+	public static boolean isValidPipCounts(int potentialHigh, int potentialLow) {
+    	boolean isValidPips = true;
+    	if (potentialHigh > MAXIMUM_PIP_COUNT || potentialHigh < MINIMUM_PIP_COUNT) {
+    		isValidPips = false;
+    	}
+    	else if (potentialLow > MAXIMUM_PIP_COUNT || potentialLow < MINIMUM_PIP_COUNT) {
+    		isValidPips = false;
+    	}
+    	else if (potentialLow > potentialHigh) {
+    		isValidPips = false;
+    	}
+    	return isValidPips;
+    }
 	
 	/* Static boolean method which will check and determine whether or not the integer 
 	 * passed into the int lowPlus8TimesHigh constructor is a valid integer.
@@ -40,7 +53,16 @@ public class DominoLowDifferenceStringImpl_Arroyo implements Domino{
 	 * Otherwise, return false. 
 	 * */
 	public static boolean isLowPlus8TimesHighInteger(int k) {
-		return validInputsForLowPlus8TimesHigh.contains(k);
+		boolean wasFound = false;
+		for (int x = MINIMUM_PIP_COUNT; x <= MAXIMUM_PIP_COUNT; ++x) {
+			for (int y = x; y <= MAXIMUM_PIP_COUNT; ++y) {
+				int check = x + (y * 8);
+				if (k == check) {
+					wasFound = true;
+				}
+			}
+		}
+		return wasFound;
 	}
 	
 	// Helper method used to convert a character in the instance variable string
@@ -69,14 +91,8 @@ public class DominoLowDifferenceStringImpl_Arroyo implements Domino{
 		int sum = highSum.get(INDEX_OF_SUM);
 		int lowPip = sum - highPip;
 		int difference = highPip - lowPip;
-		if (difference >= 0) {
-			lowDifferenceString = intToString(lowPip) + LOW_DIFFERENCE_DELIMITER + intToString(difference);
-		}
-		// The list which was passed in was a valid set, but no domino instance can be constructed 
-		// Based on the relationship between our client-facing and internal representations
-		else {
-			throw new RuntimeException("I can't construct a domino with your list.");
-		}
+		assert isValidPipCounts(highPip, lowPip);
+		lowDifferenceString = intToString(lowPip) + LOW_DIFFERENCE_DELIMITER + intToString(difference);
 	}
 	
 	/* Static boolean method which will check and see if the list sent in the highSum list
@@ -86,13 +102,13 @@ public class DominoLowDifferenceStringImpl_Arroyo implements Domino{
 	public static boolean isHighSumList(List<Integer> aList) {
 		boolean validList = true;
 		
-		if (aList.size() == 2) {
+		if (aList != null && !aList.contains(null) && aList.size() == 2) {
 			int potentialHigh = aList.get(INDEX_OF_HIGH);
 			int potentialSum = aList.get(INDEX_OF_SUM);
 			if (potentialHigh > MAXIMUM_PIP_COUNT || potentialHigh < MINIMUM_PIP_COUNT) {
 				validList = false;
 			}
-			else if (potentialSum < MIN_SUM || potentialSum > MAX_SUM) {
+			else if (!checkSumRange(potentialSum)) {
 				validList = false;
 			}
 			else if (potentialHigh > potentialSum) {
@@ -103,6 +119,10 @@ public class DominoLowDifferenceStringImpl_Arroyo implements Domino{
 			validList = false;
 		}
 		return validList;
+	}
+	
+	public static boolean checkSumRange(int s) {
+		return (s <= MAXIMUM_PIP_COUNT + MAXIMUM_PIP_COUNT && s >= MINIMUM_PIP_COUNT + MINIMUM_PIP_COUNT);
 	}
 	
 	// Getter for highPipCount attribute of the Domino interface
