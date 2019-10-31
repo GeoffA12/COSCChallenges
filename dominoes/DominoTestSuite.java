@@ -38,24 +38,19 @@ public class DominoTestSuite {
 	}
 	
 	public static void testHighLowImplDoubleInteger() {
-		Domino d1 = new DominoHighLowImpl_Arroyo(min, min);
-		assert d1.getHighPipCount() == min;
-		assert d1.getLowPipCount() == min;
-		d1 = new DominoHighLowImpl_Arroyo(max, 4);
-		assert d1.getHighPipCount() == max;
+		Domino d1 = new DominoHighLowImpl_Arroyo(0, 0);
+		assert d1.getHighPipCount() == 0;
+		assert d1.getLowPipCount() == 0;
+		d1 = new DominoHighLowImpl_Arroyo(6, 4);
+		assert d1.getHighPipCount() == 6;
 		assert d1.getLowPipCount() == 4;
-		d1 = new DominoHighLowImpl_Arroyo(max, min);
-		assert d1.getHighPipCount() == max;
-		assert d1.getLowPipCount() == min;
+		d1 = new DominoHighLowImpl_Arroyo(6, 0);
+		assert d1.getHighPipCount() == 6;
+		assert d1.getLowPipCount() == 0;
 		d1 = new DominoHighLowImpl_Arroyo(4, 2);
 		assert d1.getHighPipCount() == 4;
 		assert d1.getLowPipCount() == 2;
-//		d1 = new DominoHighLowImpl_Arroyo(7, 0);
-//		assert d1.getHighPipCount() == 6;
-//		assert d1.getLowPipCount() == 1;
-//		d1 = new DominoHighLowImpl_Arroyo(6, -1);
-//		assert d1.getHighPipCount() == 6;
-//		assert d1.getLowPipCount() == 1;
+
 	}
 	
 	public static void testHighLowImplHighLowString() {
@@ -74,20 +69,17 @@ public class DominoTestSuite {
 		d1 = new DominoHighLowImpl_Arroyo("5:2");
 		assert d1.getHighPipCount() == 5;
 		assert d1.getLowPipCount() == 2;
-//		String s = null;
-//		d1 = new DominoHighLowImpl_Arroyo(s);
-//		d1 = new DominoHighLowImpl_Arroyo("0:1");
-//		assert d1.getHighPipCount() == 0;
-//		assert d1.getLowPipCount() == 1;
-//		d1 = new DominoHighLowImpl_Arroyo("7:6");
-//		assert d1.getHighPipCount() == 0;
-//		assert d1.getLowPipCount() == 1;
-//		d1 = new DominoHighLowImpl_Arroyo("1:00");
-//		assert d1.getHighPipCount() == 1;
-//		assert d1.getLowPipCount() == 0;
-//		d1 = new DominoHighLowImpl_Arroyo("4,2");
-//		assert d1.getHighPipCount() == 4;
-//		assert d1.getLowPipCount() == 2;
+		String[] badStrings = new String[] {null, "0:1", "7:6", "1:00", "01:2", "4,2", "0:00", "3:-1", "2*1", ""};
+		int numExplosions = 0;
+		for (int x = 0; x < badStrings.length; ++x) {
+			try {
+				Domino d2 = new DominoHighLowImpl_Arroyo(badStrings[x]);
+			}
+			catch (AssertionError ae) {
+				numExplosions++;
+			}
+		}
+		assert numExplosions == badStrings.length;
 	}
 	
 	public static void testHighLowImplSumDifferenceArray() {
@@ -103,11 +95,7 @@ public class DominoTestSuite {
 		d1 = new DominoHighLowImpl_Arroyo(new int[]{6, 2});
 		assert d1.getHighPipCount() == 4;
 		assert d1.getLowPipCount() == 2;
-//		d1 = new DominoHighLowImpl_Arroyo(new int[]{0, 2});
-//		assert d1.getHighPipCount() == 2;
-//		assert d1.getLowPipCount() == 2;
-//		int[] n = null;
-//		d1 = new DominoHighLowImpl_Arroyo(n);
+
 		d1 = new DominoHighLowImpl_Arroyo(new int[]{9, 1});
 		assert d1.getHighPipCount() == 5;
 		assert d1.getLowPipCount() == 4;
@@ -117,12 +105,19 @@ public class DominoTestSuite {
 		d1 = new DominoHighLowImpl_Arroyo(new int[]{8, 0});
 		assert d1.getHighPipCount() == 4;
 		assert d1.getLowPipCount() == 4;
-//		d1 = new DominoHighLowImpl_Arroyo(new int[]{6, 4});
-//		assert d1.getHighPipCount() == 5;
-//		assert d1.getLowPipCount() == 1;
-//		d1 = new DominoHighLowImpl_Arroyo(new int[]{3, 0});
-//		assert d1.getHighPipCount() == 2;
-//		assert d1.getLowPipCount() == 1;
+		int[][] badArrays = new int[][] {new int[] {0, 2}, null, new int[] {9, 4}, new int[] {4, -1}, new int[] {7, 2}, new int[] {5}, new int[] {12, 1}, new int[] {10, 4}};
+		int numExplosions = 0;
+		for (int x = 0; x < badArrays.length; ++x) {
+			try {
+				Domino d2 = new DominoHighLowImpl_Arroyo(badArrays[x]);
+			}
+			catch (AssertionError ae) {
+				numExplosions++;
+				System.out.println(Arrays.toString(badArrays[x]));
+			}
+		}
+		assert numExplosions == badArrays.length;
+
 	}
 	
 	public static void testHighLowImplHighLowSet() {
@@ -156,19 +151,50 @@ public class DominoTestSuite {
 		catch (AssertionError ae) {
 			
 		}
+		i = new HashSet<Integer>();
+		try {
+			d1 = new DominoHighLowImpl_Arroyo(i);
+			System.out.println("I was expecting an assertion error!");
+			assert false;
+		}
+		catch (AssertionError ae) {
+			
+		}
+		i = new HashSet<Integer>(Arrays.asList(7));
+		try {
+			d1 = new DominoHighLowImpl_Arroyo(i);
+			System.out.println("I was expecting an assertion error!");
+			assert false;
+		}
+		catch (AssertionError ae) {
+			
+		}
+		i = new HashSet<Integer>(Arrays.asList(0, 5, 7));
+		try {
+			d1 = new DominoHighLowImpl_Arroyo(i);
+			System.out.println("I was expecting an assertion error!");
+			assert false;
+		}
+		catch (AssertionError ae) {
+			
+		}
+		i = new HashSet<Integer>(Arrays.asList(2, -1));
+		try {
+			d1 = new DominoHighLowImpl_Arroyo(i);
+			System.out.println("I was expecting an assertion error!");
+			assert false;
+		}
+		catch (AssertionError ae) {
+			
+		}
 		
 		d1 = new DominoHighLowImpl_Arroyo(new HashSet<Integer>(Arrays.asList(4)));
 		assert d1.getHighPipCount() == 4;
 		assert d1.getLowPipCount() == 4;
-		d1 = new DominoHighLowImpl_Arroyo(new HashSet<Integer>(Arrays.asList(3, max)));
-		assert d1.getHighPipCount() == max;
+		d1 = new DominoHighLowImpl_Arroyo(new HashSet<Integer>(Arrays.asList(3, 6)));
+		assert d1.getHighPipCount() == 6;
 		assert d1.getLowPipCount() == 3;
-//		d1 = new DominoHighLowImpl_Arroyo(new HashSet<Integer>(Arrays.asList(7)));
-//		assert d1.getHighPipCount() == 7;
-//		assert d1.getLowPipCount() == 7;
-//		d1 = new DominoHighLowImpl_Arroyo(new HashSet<Integer>(Arrays.asList(0, 5, 7)));
-//		assert d1.getHighPipCount() == 5;
-//		assert d1.getLowPipCount() == 0;
+
 		d1 = new DominoHighLowImpl_Arroyo(new HashSet<Integer>(Arrays.asList(max, min)));
 		assert d1.getHighPipCount() == max;
 		assert d1.getLowPipCount() == min;
@@ -266,6 +292,20 @@ public class DominoTestSuite {
 		d1 = new DominoHighLowSetImpl_Arroyo("4,0");
 		assert d1.getHighPipCount() == 2;
 		assert d1.getLowPipCount() == 2;
+		
+		String[] badStrings = new String[] {"8,8", "1,5", null, "", "10,4", "5:1", "5,1 ", " 5,1", " 5,1 ", "8*2", "9,4", "11,6", "0,1", "-1,3", "3,-1", "4,1", "00,0"};
+		int numExplosions = 0;
+		for (int x = 0; x < badStrings.length; ++x) {
+			try {
+				Domino d2 = new DominoHighLowSetImpl_Arroyo(badStrings[x]);
+			}
+			catch (AssertionError ae) {
+				numExplosions++;
+				System.out.println(badStrings[x]);
+			}
+		}
+		assert numExplosions == badStrings.length;
+		
 	}
 	
 	public static void testHighLowSetImplDoubleInteger() {
