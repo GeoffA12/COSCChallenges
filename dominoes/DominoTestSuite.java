@@ -474,16 +474,25 @@ public class DominoTestSuite {
 		d1 = new DominoLowDifferenceStringImpl_Arroyo(new ArrayList<Integer>(Arrays.asList(3, 5)));
 		assert d1.getHighPipCount() == 3;
 		assert d1.getLowPipCount() == 2;
-//		List<Integer> aList = null;
-//		d1 = new DominoLowDifferenceStringImpl_Arroyo(aList);
-//		List<Integer> aList = new ArrayList<Integer>();
-//		d1 = new DominoLowDifferenceStringImpl_Arroyo(aList);
-//		d1 = new DominoLowDifferenceStringImpl_Arroyo(new ArrayList<Integer>(Arrays.asList(2, 5)));
-//		assert d1.getHighPipCount() == 2;
-//		assert d1.getLowPipCount() == 3;
+		d1 = new DominoLowDifferenceStringImpl_Arroyo(new ArrayList<Integer>(Arrays.asList(max, max)));
+		assert d1.getHighPipCount() == 6;
+		assert d1.getLowPipCount() == 0;
+		d1 = new DominoLowDifferenceStringImpl_Arroyo(new ArrayList<Integer>(Arrays.asList(min, min)));
+		assert d1.getHighPipCount() == min;
+		assert d1.getLowPipCount() == 0;
+		int numExplosions = 0;
+		List<ArrayList<Integer>> badLists = new ArrayList<ArrayList<Integer>>(Arrays.asList(new ArrayList<Integer>(Arrays.asList(2, 5)), new ArrayList<Integer>(Arrays.asList(4, 3)), new ArrayList<Integer>(Arrays.asList(2, 8)), new ArrayList<Integer>(Arrays.asList(7, 13)), new ArrayList<Integer>(Arrays.asList(null, null)), null, new ArrayList<Integer>(Arrays.asList(5, -1)), new ArrayList<Integer>(Arrays.asList(3, -1)), new ArrayList<Integer>(Arrays.asList(1,9)), new ArrayList<Integer>(Arrays.asList(0))));
+		for (int x = 0; x < badLists.size(); ++x) {
+			try {
+				Domino d2 = new DominoLowDifferenceStringImpl_Arroyo(badLists.get(x));
+			}
+			catch (AssertionError e) {
+				numExplosions++;
+			}
+		}
+		assert numExplosions == badLists.size();
 	}
 	
 	
 }
-
 
