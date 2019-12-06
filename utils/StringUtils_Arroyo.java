@@ -1,6 +1,5 @@
 package utils;
 
-import java.util.stream.IntStream;
 
 public interface StringUtils_Arroyo {
 	public static String reverse(String str) {
@@ -29,17 +28,34 @@ public interface StringUtils_Arroyo {
 		assert (str != null && pattern != null && !pattern.equals(""));
 		int[] codePointArrayStr = str.codePoints().toArray();
 		int[] codePointArrayPattern = pattern.codePoints().toArray();
-		String codePointStr = new String(codePointArrayStr, 0, codePointArrayStr.length);
-		String codePointPattern = new String(codePointArrayPattern, 0, codePointArrayPattern.length);
 		int count = 0;
-		int start = 0;
-		while (start + codePointArrayPattern.length <= codePointArrayStr.length) {
-			if (codePointPattern.equals(codePointStr.substring(start, start + codePointArrayPattern.length))) {
-				count++;
+		int patternPointer = 0;
+		boolean pf;
+		if (codePointArrayStr.length >= codePointArrayPattern.length) {
+			for (int x = 0; x < codePointArrayStr.length; ++x) {
+				pf = true;
+				if (codePointArrayStr[x] == codePointArrayPattern[patternPointer]) {
+					for (int y = x; patternPointer < codePointArrayPattern.length && y < codePointArrayStr.length; patternPointer++) {
+						if (codePointArrayStr[y] != codePointArrayPattern[patternPointer]) {
+							pf = false;
+							break;
+						}
+						else {
+							y++;
+						}
+					}
+					patternPointer = 0;
+				}
+				else {
+					pf = false;
+				}
+				if (pf) {
+					count++;
+				}
 			}
-			start++;
 		}
 		return count;
 	}
+	
 	
 }
